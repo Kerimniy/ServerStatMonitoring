@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Dashboard</title>	
+    <meta name="robots" content="index, follow"/>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+    <style>
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+          color: aliceblue;
+          padding: 0; 
+          margin: 0; 
+          background-color: rgb(37, 37, 37);
+          overflow-x: hidden;
+      }
+      p {
+        font-size: 2vh;
+        padding: 1vh;
+        padding-left: 3vh;
+        margin: 0; 
+      }
+      .parentWrapper {
+        width: 100%;
+        min-height: 10vw; 
+        margin: 0.5vw;
+        background-color: rgb(43, 43, 43);
+        display: flex;
+        justify-content: center;
+        align-items: center; 
+        border-radius: 5vh;
+        box-sizing: border-box; 
+        overflow: hidden; 
+      }
+      .dashboard-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+          gap: 12px; 
+          min-height: 20vh;
+
+      }
+
+      [name="linear-chart"]{
+        grid-column: span 3;
+      }
+      @media (max-width: 1300px){
+        .dashboard-grid {
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+        }
+        [name="linear-chart"]{
+          grid-column: span 2;
+        }
+      }
+      @media (max-width: 1050px) {
+        [name="linear-chart"]{
+          grid-column: span 1;
+        }
+      }
+      @media (max-width: 850px) {
+        .dashboard-grid {
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+        [name="linear-chart"]{
+          grid-column: span 1;
+        }
+        
+      }
+      @media (max-width: 640px) {
+        [name="linear-chart"]{
+          grid-column: span 2;
+        }
+      }
+      @media (max-width: 450px) {
+        [name="linear-chart"]{
+          grid-column: span 1;
+        }
+      }
+
+    </style>
+
+    <style>
+
+      a img{
+        transition: transform 0.1s ease;
+      }
+    </style>
+</head>
+
+<body>
+
+
+  <div id="cpu_block">
+    <div class="parentWrapper" style="height: 5vh; min-height: 0.5vh;">
+      <a style="cursor: pointer; justify-self: flex-start;" onclick="hideorshow(this)">  
+        <img src="{{arrow_url}}" style="filter: invert(1); height: 3vh; aspect-ratio: 1/1;">
+      </a>
+       <p>CPU</p>
+    </div>
+     
+    <div>
+      <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+        <div class="parentWrapper" >
+            <p id="cpu_count_text" style="padding: 2vh; font-size: 2.5vh; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"></p> 
+        </div>
+        <div id="cpu_name" class="parentWrapper" style="min-width: 0;">
+            <p style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" id="cpu_name_text"></p>
+        </div>
+        
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="parentWrapper">
+          <div id="cpu_usage_gauge" style="width: 100%; min-width: 0; height: auto; aspect-ratio: 1/1;"></div> 
+        </div>
+
+        <div id="cpu_freq" class="parentWrapper" style="overflow: hidden;">
+            <p id="cpu_freq_text" style="font-size: 2rem; text-align: center; overflow: hidden; "></p>
+        </div>
+
+        <div class="parentWrapper" name="linear-chart" id="history_wrapper" >
+            <div id="cpu_history_chart" style="width: 100%; height: 100%; min-height: 30vh;"></div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div id="ram_block">
+    <div class="parentWrapper" style="height: 5vh; min-height: 0.5vh;">
+      <a style="cursor: pointer;" onclick="hideorshow(this)">  
+        <img src="{{arrow_url}}" style="filter: invert(1); height: 3vh; aspect-ratio: 1/1;">
+      </a>
+       <p>RAM</p>
+    </div>
+     
+    <div>
+      <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+        <div class="parentWrapper">
+            <p id="ram_count_text" style="padding: 2vh; font-size: 2.5vh; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"></p> 
+        </div>
+        <div class="parentWrapper">
+            <p id="swap_count_text" style="padding: 2vh; font-size: 2.5vh; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"></p> 
+        </div>
+        
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="parentWrapper">
+          <div id="ram_usage_gauge" style="width: 100%; min-width: 0; height: auto; aspect-ratio: 1/1;"></div> 
+        </div>
+
+        <div class="parentWrapper" style="overflow: hidden;">
+            <div id="swap_usage_gauge" style="width: 100%; min-width: 0; height: auto; aspect-ratio: 1/1;"></div>
+        </div>
+
+        <div class="parentWrapper" name="linear-chart" id="history_wrapper">
+            <div id="ram_history_chart" style="width: 100%; height: 100%; min-height: 20vh;"></div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div id="storage_block">
+    <div class="parentWrapper" style="height: 5vh; min-height: 0.5vh;">
+      <a style="cursor: pointer;" onclick="hideorshow(this)">  
+        <img src="{{arrow_url}}" style="filter: invert(1); height: 3vh; aspect-ratio: 1/1;">
+      </a>
+       <p>Storage</p>
+    </div>
+     
+    <div>
+      <div class="dashboard-grid">
+        <div class="parentWrapper">
+            <p id="storage_volume" style="padding: 2vh; font-size: 2.5rem; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"></p> 
+        </div>
+        <div class="parentWrapper" style="overflow: hidden;">
+            <div id="storage_used" style="width: 100%; min-width: 0; height: auto; aspect-ratio: 2/1;"></div>
+        </div>
+        
+      </div>
+
+      <div class="dashboard-grid">
+
+        <div class="parentWrapper" name="linear-chart" id="history_wrapper">
+            <div id="disk_history_chart" style="width: 100%; height: 100%; min-height: 20vh;"></div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+    <div id="os_block">
+    <div class="parentWrapper" style="height: 5vh; min-height: 0.5vh;">
+      <a style="cursor: pointer;" onclick="hideorshow(this)">  
+        <img src="{{arrow_url}}" style="filter: invert(1); height: 3vh; aspect-ratio: 1/1;">
+      </a>
+       <p>OS</p>
+    </div>
+     
+    <div>
+      <div class="dashboard-grid">
+        <div class="parentWrapper" style="grid-column: span 2;">
+            <p id="os_name" style="padding: 2vh; font-size: 2rem; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"></p> 
+        </div>
+        <div class="parentWrapper">
+            <p id="os_version" style="padding: 2vh; font-size: 2rem; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"></p> 
+        </div>
+        <div class="parentWrapper">
+            <p id="uptime" style="padding: 2vh; font-size: 2rem; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"></p> 
+        </div>
+        
+      </div>
+
+    </div>
+  </div>
+
+
+</body>
+
+<script>
+const charts = {};
+const history = document.getElementById('history_wrapper');
+const cpu_name = document.getElementById('cpu_name');
+
+let timestamp = 0;
+
+function rotate(_this){
+  let img = _this.lastElementChild
+  if (img.dataset.rotation === "-90"){
+    img.style.transform = `rotate(${0}deg)`;
+    img.dataset.rotation = 0;
+  }
+  else{
+    img.style.transform = `rotate(${-90}deg)`;
+    img.dataset.rotation = -90;
+  }
+}
+
+function initCharts() {
+  createGauge('cpu_usage_gauge', 0,"CPU"); 
+  createGauge('ram_usage_gauge', 0,"RAM"); 
+  createGauge('swap_usage_gauge', 0,"Swap"); 
+  createGauge('storage_used', 0,"Storage"); 
+  renderCpuHistoryChart('cpu_history_chart', []); 
+  renderCpuHistoryChart('ram_history_chart', []); 
+  renderDiskHistoryChart('disk_history_chart', []); 
+  
+}
+
+async function updateCpuData() {
+  try {
+    const response = await fetch("http://localhost:8000/getcpuinfo");
+    if (!response.ok) throw new Error('Network error');
+    const json = await response.json();
+
+    document.getElementById("cpu_name_text").innerText = json.name || 'N/A';
+    document.getElementById("cpu_freq_text").innerText = `Frequency:\n${(json.frequency || 0)} MHz`;
+    document.getElementById("cpu_count_text").innerText = "Threads:\n" + (json.cpu_count || 0);
+
+    updateGauge('cpu_usage_gauge', json.cpu_usage || 0,"CPU");
+    updateCpuHistoryChart('cpu_history_chart', json.prev_cpus || []);
+  } catch (error) {
+    console.error('Fetch error:', error);
+    document.getElementById("cpu_freq_text").innerText = "Error loading data";
+  }
+}
+
+async function updateRamData() {
+  try {
+    const response = await fetch("http://localhost:8000/getraminfo");
+    if (!response.ok) throw new Error('Network error');
+    const json = await response.json();
+
+    document.getElementById("ram_count_text").innerText = `RAM:\n${json.ram_size} GiB`;
+    document.getElementById("swap_count_text").innerText = `Swap:\n${(json.swap_size || 0)} GiB`;
+
+    updateGauge('ram_usage_gauge', json.ram_used || 0, "RAM");
+    updateGauge('swap_usage_gauge', json.swap_size || 0, "Swap");
+    updateCpuHistoryChart('ram_history_chart', json.prev_ram_used || []);
+  } catch (error) {
+    console.error('Fetch error:', error);
+    document.getElementById("cpu_freq_text").innerText = "Error loading data";
+  }
+}
+
+async function updateDiskData() {
+  try {
+    const response = await fetch("http://localhost:8000/getdiskinfo");
+    if (!response.ok) throw new Error('Network error');
+    const json = await response.json();
+
+    document.getElementById("storage_volume").innerText = `Volume:\n${json.total_size} GiB`;
+
+    updateGauge('storage_used',Math.round(json.used*1000)/10.0 || 0, "Storage Used");
+    renderDiskHistoryChart('disk_history_chart', json); 
+  } catch (error) {
+    console.error('Fetch error:', error);
+  }
+}
+
+async function updateOsData() {
+  try {
+    const response = await fetch("http://localhost:8000/getosinfo");
+    if (!response.ok) throw new Error('Network error');
+    const json = await response.json();
+
+    document.getElementById("os_name").innerText = `OS:\n${json.name}`;
+    document.getElementById("os_version").innerText = `Kernel:\n${json.kernel}`;
+    document.getElementById("uptime").innerText = `Uptime:\n${json.uptime}`;
+
+  } catch (error) {
+    console.error('Fetch error:', error);
+  }
+}
+
+function createGauge(id, v, title) {
+  const chart = echarts.init(document.getElementById(id));
+  charts[id] = chart;
+  updateGauge(id, v,title); 
+}
+
+function updateGauge(id, v,title) {
+  const chart = charts[id];
+  if (!chart) return;
+  const lwidth = document.getElementById(id).offsetHeight;
+
+  chart.setOption({
+    title: {
+        text: title,
+        left: 'center',
+        bottom: lwidth * 0.05,         
+        textStyle: {
+            color: '#fff',
+            fontSize: lwidth * 0.1
+        }
+    },
+    series: [
+      {
+        type: 'gauge',
+        z: 10,    
+        radius: '82.5%',
+        pointer: { show: false },
+        progress: { show: false },
+        axisLine: {
+          lineStyle: {
+            width: lwidth * 0.045,
+            color: [
+              [0.50, '#22c55e'],
+              [0.80, '#facc15'],
+              [1.00, '#ef4444']
+            ]
+          }
+        },
+        axisTick: { show: false },
+        axisLabel: { show: false },
+        splitLine: { show: false }
+      },
+      {
+        type: 'gauge',
+        z: 1,       
+        radius: '75%',
+        pointer: { show: false },
+        axisLine: { lineStyle: { width: 0 } },
+        progress: { 
+          show: true, 
+          width: lwidth * 0.04,
+          color: "#555"
+        },
+        detail: { valueAnimation: true },
+        data: [{ value: v }],
+        axisTick: { show: false },
+        axisLabel: { show: false },
+        splitLine: { show: false },
+        detail: {
+          valueAnimation: true,
+          fontSize: lwidth * 0.1,
+          formatter: '{value}%',   
+          offsetCenter: ['0%', '0%'],  
+          color: '#ffffff'
+        }
+      }
+    ]
+  });
+}
+
+function renderCpuHistoryChart(id, arr) {
+  const chart = echarts.init(document.getElementById(id));
+  charts[id] = chart;
+  updateCpuHistoryChart(id, arr);
+}
+
+function renderDiskHistoryChart(id, arr) {
+  const chart = echarts.init(document.getElementById(id));
+  charts[id] = chart;
+  updateDiskHistoryChart(id, arr);
+}
+
+function updateCpuHistoryChart(id, arr) {
+  const chart = charts[id];
+  if (!chart) return;
+  let times = arr.map(o => new Date(o.v1 * 1000).toISOString());
+  let values = arr.map(o => o.v2);
+
+
+  chart.setOption({
+    tooltip: {
+        trigger: 'axis',
+        formatter: '{b}<br/>Usage: {c}%'
+    },
+    xAxis: {
+        type: 'category',
+        data: times,
+        axisLabel: {
+            color: '#ddd',
+            formatter: value => {
+              const date = new Date(value);
+              return date.toLocaleTimeString(); 
+            }
+        }
+    },
+    yAxis: {
+        type: 'value',
+        axisLabel: { color: '#ddd' },
+        min: 0,
+        max: 100,
+        splitLine: { lineStyle: { color: '#555' } }
+    },
+    series: [{
+        type: 'line',
+        data: values,
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 6,
+        lineStyle: { width: 3 },
+        areaStyle: {
+            opacity: 0.25
+        }
+    }],
+    grid: {
+      left: '5%',
+      right: '5%',
+      bottom: '15%',
+      containLabel: true
+    }
+  });
+}
+
+function updateDiskHistoryChart(id, arr) {
+  const chart = charts[id];
+  if (!chart) return;
+  let read_values =[]
+  let wrote_values =[]
+  let times
+  if (arr.prev_read!==undefined){
+    times = arr.prev_read.map(o => new Date(o.v1 * 1000).toISOString());
+    
+
+    for (let i=1;i<arr.prev_read.length;i++){
+      let sec = arr.prev_read[i].v1 - arr.prev_read[i-1].v1 
+      let read = arr.prev_read[i].v2 - arr.prev_read[i-1].v2
+      read_values.push(read/sec)
+    }
+
+    for (let i=1;i<arr.prev_write.length;i++){
+      let sec = arr.prev_write[i].v1 - arr.prev_write[i-1].v1 
+      let wrote = arr.prev_write[i].v2 - arr.prev_write[i-1].v2
+      wrote_values.push(wrote/sec)
+    }
+
+    times = times.slice(1,times.length-1)
+
+  }
+  else{
+    
+  }
+
+
+  chart.setOption({
+    tooltip: {
+        trigger: 'axis',
+        backgroundColor: '#222',
+         textStyle: {
+            color: '#ddd', 
+            fontSize: 12  
+        },
+        formatter: function (params) {
+          let tooltipText = `Read: ${params[0].data} MiB/s<br/>Write: ${params[1].data} MiB/s`;
+         
+          return tooltipText;
+      }
+    },
+    legend: {
+        data: ['Read', 'Write'], 
+        textStyle: { color: '#ddd' }, 
+        bottom: '0%' 
+    },
+    xAxis: {
+        type: 'category',
+        data: times,
+        axisLabel: {
+            color: '#ddd',
+            formatter: value => {
+              const date = new Date(value);
+              return date.toLocaleTimeString(); 
+            }
+        }
+    },
+    yAxis: {
+        type: 'value',
+        axisLabel: { color: '#ddd' },
+        min: 0,
+        max: function (value) {
+            return Math.max(1, value.max); 
+        },
+        splitLine: { lineStyle: { color: '#555' } }
+    },
+    series: [{
+          name: "Read",
+          type: 'line',
+          data: read_values,
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 6,
+          lineStyle: { width: 3 },
+          areaStyle: {
+              opacity: 0.25
+          }
+      },
+      {
+          name: "Write",
+          type: 'line',
+          data: wrote_values,
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 6,
+          lineStyle: { width: 3 },
+          areaStyle: {
+              opacity: 0.25
+          }
+      }
+  
+    ],
+
+    grid: {
+      left: '5%',
+      right: '5%',
+      bottom: '15%',
+      containLabel: true
+    }
+  });
+}
+
+function adjustHistorySpan() {
+  const grid = history.parentElement;
+  const style = window.getComputedStyle(grid);
+  const columnCount = style.gridTemplateColumns.split(' ').length;
+  let r = columnCount;
+  let spanVal = r < 3 ? r : r - 2;
+  if (window.innerWidth<=410){
+    spanVal=1
+  }
+  //history.style.gridColumn = `span ${spanVal}`;
+  
+}
+
+function hideorshow(_this){
+  rotate(_this)
+  let el = _this.parentElement.parentElement.lastElementChild;
+  if (el.style.display === "none"){
+    el.style.display = "block"
+    document.cookie = `${_this.parentElement.parentElement.id}=block;max-age=2592000`;
+    for (const id in charts) {
+      try{
+        charts[id].resize();
+        if (charts[id].getOption().series.length>1 && charts[id].getOption().series[1].type){
+          updateGauge(id, charts[id].getOption().series[1].data[0].value,charts[id].getOption().title[0]["text"]);
+        }
+      }
+      catch (Error){
+
+      }
+    }
+  }
+  else{
+    el.style.display = "none"
+    
+    document.cookie = `${_this.parentElement.parentElement.id}=none;max-age=2592000`;
+  }
+}
+
+
+function setState(){
+  let data =  Object.fromEntries(
+    document.cookie.split('; ').map(c => c.split('='))
+  );
+  for (let el in data){
+    try{
+      document.getElementById(el).lastElementChild.style.display = data[el]
+      if (data[el]==="none"){
+        rotate(document.getElementById(el).firstElementChild.firstElementChild)
+      }
+    }
+    catch (Error){
+      
+    }
+  }
+}
+
+
+setState()
+
+initCharts();
+adjustHistorySpan();
+updateCpuData(); 
+updateRamData()
+updateDiskData()
+updateOsData()
+for (const id in charts) {
+      
+      charts[id].resize();
+      if (charts[id].getOption().series.length>1 && charts[id].getOption().series[1].type==="gauge"){
+        updateGauge(id, charts[id].getOption().series[1].data[0].value,charts[id].getOption().title[0]["text"]);
+      }
+    }
+setInterval(()=>{updateCpuData(); updateRamData(); updateDiskData()}, 20000); 
+
+window.addEventListener('resize', () => {
+  if (Date.now()-timestamp>400){
+
+    timestamp = Date.now()
+
+    for (const id in charts) {
+      try{
+        charts[id].resize();
+        if (charts[id].getOption().series.length>1 && charts[id].getOption().series[1].type){
+          updateGauge(id, charts[id].getOption().series[1].data[0].value,charts[id].getOption().title[0]["text"]);
+        }
+      }
+      catch (Error){
+
+      }
+    }
+  }
+});
+</script>
+</html>
