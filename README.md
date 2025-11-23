@@ -1,5 +1,5 @@
 <img src="https://github.com/Kerimniy/ServerStatMonitoring/blob/main/app_win_x86_64/static/favicon.png" style="width: 70px">
-<p>На русском тута <a href="https://github.com/Kerimniy/ServerStatMonitoring/blob/main/README-RU">тык</a></p>
+<p>На русском тута <a href="https://github.com/Kerimniy/ServerStatMonitoring/blob/main/README-RU.md">тык</a></p>
 
 # ServerStatMonitoring — Real-Time System Monitoring Web App
 
