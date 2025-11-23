@@ -1,3 +1,5 @@
+<img src="https://github.com/Kerimniy/ServerStatMonitoring/blob/main/app_win_x86_64/static/favicon.png" style="width: 70px">
+
 # System Monitor — Lightweight Real-Time System Monitoring Web App in Rust
 
 A simple single-page real-time dashboard for monitoring your computer (CPU, RAM, disks, OS).  
