@@ -5,8 +5,7 @@
 A simple single-page real-time dashboard for monitoring your computer (CPU, RAM, disks, OS).  
 Works on **Windows** and **Linux**.
 
-[<img scr="[https://github.com/Kerimniy/ServerStatMonitoring/blob/main/prev.png](https://github.com/Kerimniy/ServerStatMonitoring/blob/main/prev.png?raw=true)" style="500px">
-](https://github.com/Kerimniy/ServerStatMonitoring/blob/main/prev.png?raw=true)
+[<img scr="[https://github.com/Kerimniy/ServerStatMonitoring/blob/main/prev.png](https://github.com/Kerimniy/ServerStatMonitoring/blob/main/prev.png?raw=true)">](https://github.com/Kerimniy/ServerStatMonitoring/blob/main/prev.png?raw=true)
 ## Features
 
 - Web interface built with **Rocket.rs** + **Handlebars** templates
